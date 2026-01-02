@@ -87,27 +87,26 @@
     <h1>Tic Tac Toe</h1>
 
     <script> 
-        if(Math.round(Math.random()) == 0) {
-                turn = "O"
-            } else {
-                turn = "X"
-            }
+        if (Math.round(Math.random()) == 0) {
+            turn = "O";
+        } else {
+            turn = "X";
+        }
+
+        let endGame = false;
     </script>
 
     <div class="turn">
         <p id="currTurn"></p>
     </div>
         
-
     <div class="square-container">
     <script>
-
         const NUM_SQUARES = 9;
         for (i=0; i<NUM_SQUARES; i++) {
             id = "sq"+i;
             document.write("<div class='square' id='" + id + "'></div>");
         }
-
     </script>
     </div>
     
@@ -119,27 +118,29 @@
         const currTurn = document.getElementById("currTurn");
 
         function markClick() {
+            if (endGame) return;
+
             let num = parseInt(this.id.replace("sq",""));
+            
             if (this.innerHTML != "") 
                 return;
 
             this.innerHTML = turn; 
+            checkOver(); 
 
-            alert("square clicked: " + num);
-
-            if (turn == "X") {
-                turn = "O";
-            } else {
-                turn = "X";
+            if (!endGame) {
+                if (turn == "X") {
+                    turn = "O";
+                } else {
+                    turn = "X";
+                }
+                currTurn.innerText = 'Player "' + turn + '" turn';
             }
-
-            currTurn.innerText = 'Player "' + turn + '" turn';
         }
 
         for (i=0; i<NUM_SQUARES; i++) {
             let sq = document.getElementById("sq"+i);
             sq.onclick = markClick;
-
         }
 
         currTurn.innerText = 'Player "' + turn + '" turn';
@@ -152,15 +153,45 @@
                 sq.innerHTML = "";
             }
 
-            if(Math.round(Math.random()) == 0) {
-                turn = "O"
+            if (Math.round(Math.random()) == 0) {
+                turn = "O";
             } else {
-                turn = "X"
+                turn = "X";
             }
             
+            endGame = false;
             currTurn.innerText = 'Player "' + turn + '" turn';
         };
 
+        function checkOver() {
+            let moves = [];
+            Array.from({length: 9}).forEach((_, i) => {
+                let sq = document.getElementById("sq" + i);
+                moves[i] = sq.innerText || "-";
+            });
+
+            let winConditions = [
+                moves[0]+moves[1]+moves[2],
+                moves[3]+moves[4]+moves[5],
+                moves[6]+moves[7]+moves[8],
+                moves[0]+moves[3]+moves[6],
+                moves[1]+moves[4]+moves[7],
+                moves[2]+moves[5]+moves[8],
+                moves[0]+moves[4]+moves[8],
+                moves[2]+moves[4]+moves[6]
+            ];
+
+            if (winConditions.includes("XXX")) {
+                currTurn.innerText = "Player X wins!";
+                endGame = true;
+            } else if (winConditions.includes("OOO")) {
+                currTurn.innerText = "Player O wins!";
+                endGame = true;
+            } else if (!moves.includes("-")) {
+                currTurn.innerText = "Tie!";
+                endGame = true;
+            }
+        }
     </script>
 </body>
 </html>
